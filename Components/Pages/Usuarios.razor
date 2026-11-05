@@ -1,0 +1,52 @@
+@page "/usuarios"
+
+@foreach(Usuario u in lstUsuarios)
+{
+    <div class="grid">
+        <h2>Username: @u.Nombre</h2>
+        <h2>Correo: @u.Correo</h2>
+        <h2>Telefono: @u.Telefono</h2>
+        <h2>Rol: @u.Rol</h2>
+        <h2>Activo: @u.Activo</h2>  
+        <br> 
+     </div>
+}
+
+@code {
+
+    // LISTA DE USUARIOS
+    private List<Usuario> lstUsuarios = new()
+    {
+        new Usuario("Carlos Mendoza", "carlos@gmail.com", "70123456", "Administrador"),
+        new Usuario("María Fernández", "maria@gmail.com", "71234567", "Empleado"),
+        new Usuario("Juan Pérez", "juan@gmail.com", "72345678", "Cliente"),
+        new Usuario("Lucía Ramírez", "lucia@gmail.com", "73456789", "Empleado"),
+        new Usuario("Pedro Flores", "pedro@gmail.com", "74567890", "Cliente"),
+        new Usuario("Ana Morales", "ana@gmail.com", "75678901", "Administrador"),
+        new Usuario("Sofía Vargas", "sofia@gmail.com", "76789012", "Cliente"),
+        new Usuario("Josias Zarate", "elEithanselacome@gmail.com", "77890123", "Gil")
+    };
+
+    
+    // CLASE USUARIO
+    public class Usuario
+    {
+        public string Nombre { get; set; } = "";
+        public string Correo { get; set; } = "";
+        public string Telefono { get; set; } = "";
+        public string Rol { get; set; } = "Cliente";
+        public bool Activo { get; set; } = true;
+
+        public Usuario() { }
+
+        public Usuario(string nombre, string correo, string telefono, string rol)
+        {
+            Nombre = nombre;
+            Correo = correo;
+            Telefono = telefono;
+            Rol = rol;
+            Activo = true;
+        }
+    }
+
+}
