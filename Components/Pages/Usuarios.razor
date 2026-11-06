@@ -1,16 +1,22 @@
 @page "/usuarios"
+@using sharpness_sharp.Components.Pages.UIComponents
 
-@foreach(Usuario u in lstUsuarios)
-{
-    <div class="grid">
-        <h2>Username: @u.Nombre</h2>
-        <h2>Correo: @u.Correo</h2>
-        <h2>Telefono: @u.Telefono</h2>
-        <h2>Rol: @u.Rol</h2>
-        <h2>Activo: @u.Activo</h2>  
-        <br> 
-     </div>
-}
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+    @foreach(Usuario u in lstUsuarios)
+    {
+        <div class="border">
+            <h2>Username: @u.Nombre</h2>
+            <h2>Correo: @u.Correo</h2>
+            <h2>Telefono: @u.Telefono</h2>
+            <h2>Rol: @u.Rol</h2>
+            <h2>Activo: @u.Activo</h2>  
+            <br> 
+        </div>
+
+        <CoffeCard Imagen="fkdovnfdo" DescripcionCafe="Hola joshi"></CoffeCard>
+    }
+</div>
+
 
 @code {
 
@@ -36,8 +42,6 @@
         public string Telefono { get; set; } = "";
         public string Rol { get; set; } = "Cliente";
         public bool Activo { get; set; } = true;
-
-        public Usuario() { }
 
         public Usuario(string nombre, string correo, string telefono, string rol)
         {

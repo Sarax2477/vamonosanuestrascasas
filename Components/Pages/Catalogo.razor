@@ -1,4 +1,5 @@
 @page "/catalogo"
+@using sharpness_sharp.Components.Pages.UIComponents
 
 <div class="min-h-screen bg-[#F8F5F0]">
 
@@ -35,63 +36,71 @@
         </p>
     </section>
 
-    <!-- CATÁLOGO -->
-    <section class="max-w-7xl mx-auto px-6 pb-16">
+    
+<!-- CATÁLOGO -->
+<section class="max-w-7xl mx-auto px-6 pb-16">
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+    <!-- BOTONES DE ACCIÓN -->
+    <div class="flex flex-col sm:flex-row justify-center
+        items-center gap-4 mb-10">
 
-            @foreach (Cafe cafe in lstCafes)
+        <button @onclick="MostrarMensaje"
+            class="w-full sm:w-auto bg-[#38251C]
+            hover:bg-[#754522] text-white font-bold
+            px-8 py-3 rounded-xl shadow-md
+            hover:shadow-xl transition-all duration-300
+            active:scale-95">
+            ¡Pulsa aquí!
+        </button>
+
+        <button @onclick="AgregarCafe"
+            class="w-full sm:w-auto bg-[#C99A60]
+            hover:bg-[#B17A45] text-white font-bold
+            px-8 py-3 rounded-xl shadow-md
+            hover:shadow-xl transition-all duration-300
+            active:scale-95">
+            + Agregar café
+        </button>
+
+    </div>
+
+    @if (lstMensajes.Count > 0)
+    {
+        <div class="max-w-xl mx-auto mb-10 space-y-3">
+
+            @foreach (var mensaje in lstMensajes)
             {
-                <div class="group bg-white rounded-2xl overflow-hidden shadow-md
-                            hover:shadow-2xl transition-all duration-300
-                            hover:-translate-y-2 border border-[#EDE5DA]">
-
-                    <!-- IMAGEN -->
-                    <div class="relative overflow-hidden h-56">
-                        <img src="@cafe.Imagen"
-                             alt="@cafe.NombreCafe"
-                             class="w-full h-full object-cover
-                                    group-hover:scale-110 transition-transform duration-500" />
-
-                        <div class="absolute top-3 right-3 bg-[#38251C]
-                                    text-white text-xs px-4 py-2 rounded-full shadow">
-                            Especialidad
-                        </div>
-                    </div>
-
-                    <!-- INFORMACIÓN -->
-                    <div class="p-5">
-
-                        <h3 class="text-xl font-serif font-bold text-[#38251C] mb-2">
-                            @cafe.NombreCafe
-                        </h3>
-
-                        <p class="text-gray-500 text-sm leading-relaxed min-h-[48px]">
-                            @cafe.DescripcionCafe
-                        </p>
-
-                        <div class="flex items-center justify-between mt-5 pt-4
-                                    border-t border-[#EEE5DB]">
-
-                            <span class="text-xs uppercase tracking-wider text-gray-400">
-                                Precio
-                            </span>
-
-                            <span class="bg-[#F3E8D9] text-[#754522]
-                                         font-bold text-lg px-4 py-2 rounded-xl">
-                                Bs. @cafe.PrecioCafe
-                            </span>
-
-                        </div>
-
-                    </div>
+                <div class="bg-[#F3E8D9] border-l-4 border-[#C99A60] text-[#38251C] px-5 py-4 rounded-xl shadow-sm font-semibold">
+                    @mensaje
                 </div>
             }
 
         </div>
-    </section>
+    }
 
-    <!-- PIE DE PÁGINA -->
+    <div class="text-center mb-8">
+        <h2 class="text-2xl md:text-3xl font-serif font-bold text-[#38251C]">Nuestro catálogo de cafés</h2>
+        <p class="text-gray-500 mt-2"> Descubre todas nuestras especialidades </p>
+        <div class="w-20 h-1 bg-[#C99A60] mx-auto mt-4 rounded-full"> </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2
+        lg:grid-cols-3 xl:grid-cols-4 gap-8">
+
+        @foreach (Cafe cafe in lstCafes)
+        {
+            <CoffeCard
+                Imagen="@cafe.Imagen"
+                NombreCafe="@cafe.NombreCafe"
+                DescripcionCafe="@cafe.DescripcionCafe"
+                PrecioCafe="@cafe.PrecioCafe" />
+        }
+
+    </div>
+
+</section>
+
+
     <footer class="bg-[#38251C] text-center text-[#E8D9C8] py-8 px-4">
         <h3 class="text-2xl font-serif font-bold text-white mb-2">
             Aroma & Café
@@ -111,6 +120,21 @@
 
 @code {
 
+    private List<string> lstMensajes = new();
+
+    private void MostrarMensaje()
+    {
+        lstMensajes.Add("No me toques");
+    }
+    private void AgregarCafe()
+    {
+        lstCafes.Add(new Cafe(
+            "https://cuplacoffee.com/wp-content/uploads/2025/03/what-is-an-americano-featured.jpg",
+            "Café Nuevo",
+            "Café nuevo de la lista",
+            35m
+        ));
+    }
     private List<Cafe> lstCafes = new()
 {
     new Cafe(
