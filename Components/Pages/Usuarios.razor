@@ -1,56 +1,69 @@
 @page "/usuarios"
 @using sharpness_sharp.Components.Pages.UIComponents
+@using sharpness_sharp.Data
 
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-    @foreach(Usuario u in lstUsuarios)
-    {
-        <div class="border">
-            <h2>Username: @u.Nombre</h2>
-            <h2>Correo: @u.Correo</h2>
-            <h2>Telefono: @u.Telefono</h2>
-            <h2>Rol: @u.Rol</h2>
-            <h2>Activo: @u.Activo</h2>  
-            <br> 
+@inject ApplicationAuthDbContext _dbService
+
+<EditForm FormName="agregar-cafe" Model="@newUser" OnSubmit="@AgregarUsuario">
+
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="max-w-xl mx-auto bg-white p-6 rounded-xl shadow-md space-y-4">
+
+        <h2 class="text-2xl font-bold text-[#38251C]">
+            Agregar nuevo usuario
+        </h2>
+
+        <div>
+            <label>Nombre de usuario</label>
+            <InputText @bind-Value="newUser.UserName"
+                       class="w-full border p-2 rounded-lg" />
         </div>
 
-        <CoffeCard Imagen="fkdovnfdo" DescripcionCafe="Hola joshi"></CoffeCard>
+        <div>
+            <label>Email</label>
+            <InputText @bind-Value="newUser.Email"
+                       class="w-full border p-2 rounded-lg" />
+        </div>
+
+        <button type="submit"
+                class="bg-[#38251C] text-white px-6 py-3 rounded-xl">
+            Guardar Usuario
+        </button>
+
+    </div>
+
+</EditForm>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+    @foreach(ApplicationUser user in lstUsuarios)
+    {
+        <div class="border">
+            <h2>Username: @user.UserName</h2>
+            <h2>Correo: @user.Email</h2>
+        </div>
+
+        <CoffeCard></CoffeCard>
     }
 </div>
 
 
 @code {
+    private List<ApplicationUser> lstUsuarios = new();
+    private ApplicationUser newUser = new ApplicationUser();
 
-    // LISTA DE USUARIOS
-    private List<Usuario> lstUsuarios = new()
+    protected override Task OnInitializedAsync()
     {
-        new Usuario("Carlos Mendoza", "carlos@gmail.com", "70123456", "Administrador"),
-        new Usuario("María Fernández", "maria@gmail.com", "71234567", "Empleado"),
-        new Usuario("Juan Pérez", "juan@gmail.com", "72345678", "Cliente"),
-        new Usuario("Lucía Ramírez", "lucia@gmail.com", "73456789", "Empleado"),
-        new Usuario("Pedro Flores", "pedro@gmail.com", "74567890", "Cliente"),
-        new Usuario("Ana Morales", "ana@gmail.com", "75678901", "Administrador"),
-        new Usuario("Sofía Vargas", "sofia@gmail.com", "76789012", "Cliente"),
-        new Usuario("Josias Zarate", "elEithanselacome@gmail.com", "77890123", "Gil")
-    };
-
-    
-    // CLASE USUARIO
-    public class Usuario
+        lstUsuarios = _dbService.Users.ToList();
+        return base.OnInitializedAsync();
+    }
+    private Task AgregarUsuario()
     {
-        public string Nombre { get; set; } = "";
-        public string Correo { get; set; } = "";
-        public string Telefono { get; set; } = "";
-        public string Rol { get; set; } = "Cliente";
-        public bool Activo { get; set; } = true;
-
-        public Usuario(string nombre, string correo, string telefono, string rol)
-        {
-            Nombre = nombre;
-            Correo = correo;
-            Telefono = telefono;
-            Rol = rol;
-            Activo = true;
-        }
+        _dbService.Users.Add(newUser);
+        _dbService.SaveChanges();
+        newUser = new();
+        return Task.CompletedTask;
     }
 
 }
