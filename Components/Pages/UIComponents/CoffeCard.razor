@@ -1,50 +1,119 @@
-<div class="group bg-white rounded-2xl overflow-hidden shadow-md
-    hover:shadow-2xl transition-all duration-300
-    hover:-translate-y-2 border border-[#EDE5DA]">
+@using sharpness_sharp.Data.Models
 
-    <!-- IMAGEN -->
-    <div class="relative overflow-hidden h-56">
+<div class="flex flex-col justify-center gap-4
+            border border-gray-200 rounded-2xl
+            p-5 m-2 bg-white shadow-md">
+
+    @* Imagen del café *@
+    <div class="flex flex-col gap-2">
+
+        <input type="text"
+               @bind="Imagen"
+               disabled="@(!ModoEdicion)"
+               class="w-full border border-gray-300 rounded-lg
+                      p-2 text-sm focus:outline-none
+                      focus:ring-2 focus:ring-amber-400" />
+
         <img src="@Imagen"
-            alt="@NombreCafe"
-            class="w-full h-full object-cover
-            group-hover:scale-110 transition-transform duration-500" />
-
-        <div class="absolute top-3 right-3 bg-[#38251C]
-            text-white text-xs px-4 py-2 rounded-full shadow">
-                Especialidad
-        </div>
-    </div>                                 
-
-    <!-- INFORMACIÓN -->
-    <div class="p-5">
-        <h3 class="text-xl font-serif font-bold text-[#38251C] mb-2">
-            @NombreCafe
-        </h3>
-
-        <p class="text-gray-500 text-sm leading-relaxed min-h-[48px]">
-            @DescripcionCafe
-        </p>
-
-        <div class="flex items-center justify-between mt-5 pt-4
-            border-t border-[#EEE5DB]">
-
-        <span class="text-xs uppercase tracking-wider text-gray-400">
-            Precio
-        </span>
-
-        <span class="bg-[#F3E8D9] text-[#754522]
-            font-bold text-lg px-4 py-2 rounded-xl">
-            Bs. @PrecioCafe
-        </span>
+             class="w-full h-48 object-cover rounded-xl"
+             alt="Imagen del café" />
 
     </div>
 
-</div>
+    @* Nombre del café *@
+    <input type="text"
+           @bind="NombreCafe"
+           disabled="@(!ModoEdicion)"
+           class="font-bold text-2xl text-gray-800
+                  border-b border-gray-200 p-2
+                  focus:outline-none focus:border-amber-500
+                  disabled:bg-white" />
+
+    @* Descripción del café *@
+    <input type="text"
+           @bind="DescripcionCafe"
+           disabled="@(!ModoEdicion)"
+           class="text-gray-600 text-sm
+                  border-b border-gray-200 p-2
+                  focus:outline-none focus:border-amber-500
+                  disabled:bg-white" />
+
+    @* Precio *@
+    <input type="number"
+           @bind="PrecioCafe"
+           disabled="@(!ModoEdicion)"
+           class="font-bold text-amber-900 bg-amber-100
+                  hover:bg-amber-200 transition-colors
+                  rounded-xl p-3 text-center
+                  focus:outline-none disabled:cursor-default"
+           step="0.50" />
+
+    <p class="text-center text-sm text-gray-500">
+        Bs.
+    </p>
+
+    @* Botón de edición *@
+    @if (ModoEdicion)
+    {
+        <button class="font-bold text-white rounded-xl p-3
+                    shadow-sm transition-colors"
+                    style="background-color: #16a34a;"
+                @onclick="() => {
+                    CambiarModoEdicion();
+                    ActualizarProducto();
+                    }"">
+            Guardar
+        </button>
+    }
+    else
+    {
+        <button class="font-bold text-white bg-yellow-600
+                       hover:bg-yellow-700 rounded-xl p-3
+                       transition-colors shadow-sm"
+                @onclick="CambiarModoEdicion">
+            Editar
+        </button>
+    }
+    <button class="font-bold text-white rounded-xl p-3
+                    shadow-sm transition-colors"
+                    style="background-color: #972511;"
+                @onclick="EliminarProducto">
+            Eliminar
+        </button>
+
 </div>
 
-@code{
+@code {
+
+    private bool ModoEdicion = false;
+    [Parameter] public int Id { get; set; }
     [Parameter] public string? Imagen { get; set; }
     [Parameter] public string? NombreCafe { get; set; }
     [Parameter] public string? DescripcionCafe { get; set; }
     [Parameter] public decimal PrecioCafe { get; set; }
+    [Parameter] public EventCallback<Cafe> EnviarNotificacionActualizacion { get; set; }
+    [Parameter] public EventCallback<int> EnviarNotificacionEliminar { get; set; }
+
+    private void CambiarModoEdicion()
+    {
+        ModoEdicion = !ModoEdicion;
+        StateHasChanged();
+    }
+    private Task ActualizarProducto()
+    {
+        EnviarNotificacionActualizacion.InvokeAsync(new()
+        {
+            Id=Id,
+            Imagen = Imagen,
+            NombreCafe = NombreCafe,
+            DescripcionCafe = DescripcionCafe,
+            PrecioCafe = PrecioCafe,
+        });
+        return Task.CompletedTask;
+    }
+    private Task EliminarProducto()
+    {
+       EnviarNotificacionEliminar.InvokeAsync(Id);
+        return Task.CompletedTask;
+    }
 }

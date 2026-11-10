@@ -1,8 +1,9 @@
 @page "/catalogo"
+@using System.Runtime.InteropServices
+@using Microsoft.EntityFrameworkCore
 @using sharpness_sharp.Components.Pages.UIComponents
 @using sharpness_sharp.Data
 @using sharpness_sharp.Data.Models
-@using Microsoft.EntityFrameworkCore
 @inject ApplicationAuthDbContext _dbService
 
 
@@ -139,11 +140,15 @@
         @foreach (Cafe cafe in lstCafes)
         {
             <CoffeCard
+                Id="@cafe.Id"
                 Imagen="@cafe.Imagen"
                 NombreCafe="@cafe.NombreCafe"
                 DescripcionCafe="@cafe.DescripcionCafe"
-                PrecioCafe="@cafe.PrecioCafe" />
+                PrecioCafe="@cafe.PrecioCafe" 
+                EnviarNotificacionActualizacion="ActualizarProducto"
+                EnviarNotificacionEliminar="EliminarProducto"/>
         }
+
 
     </div>
 
@@ -190,5 +195,33 @@
         newCafe = new();
         return Task.CompletedTask;
     }
+    private Task ActualizarProducto(Cafe cafeEditado)
+    {
+        Cafe cafeParaEditar = _dbService.Cafes.FirstOrDefault(cafe => cafe.Id == cafeEditado.Id);
+        Console.WriteLine(cafeEditado.Id);
+        Console.WriteLine(cafeEditado.Imagen);
+        Console.WriteLine(cafeEditado.NombreCafe);
+        Console.WriteLine(cafeEditado.DescripcionCafe);
+        Console.WriteLine(cafeEditado.PrecioCafe);
 
+        cafeParaEditar.Imagen = cafeEditado.Imagen;
+        cafeParaEditar.NombreCafe = cafeEditado.NombreCafe;
+        cafeParaEditar.PrecioCafe = cafeEditado.PrecioCafe;
+        cafeParaEditar.DescripcionCafe = cafeEditado.DescripcionCafe;
+
+        _dbService.SaveChanges();
+
+    return Task.CompletedTask;
+    }
+    private void EliminarProducto(int id)
+    {
+        Cafe? cafe = lstCafes.FirstOrDefault(c=>c.Id==id);
+        if(cafe is null)
+        {
+            return;
+        }
+        _dbService.Cafes.Remove(cafe);
+        _dbService.SaveChanges();
+        lstCafes.Remove(cafe);
+    }
 }
