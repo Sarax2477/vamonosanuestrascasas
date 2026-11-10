@@ -55,32 +55,44 @@
     @* Botón de edición *@
     @if (ModoEdicion)
     {
-        <button class="font-bold text-white rounded-xl p-3
-                    shadow-sm transition-colors"
-                    style="background-color: #16a34a;"
-                @onclick="() => {
-                    CambiarModoEdicion();
-                    ActualizarProducto();
-                    }"">
-            Guardar
-        </button>
+        <AuthorizeView Roles="Admin">
+            <Authorized>
+                <button class="font-bold text-white rounded-xl p-3
+                            shadow-sm transition-colors"
+                            style="background-color: #16a34a;"
+                        @onclick="() => {
+                            CambiarModoEdicion();
+                            ActualizarProducto();
+                            }"">
+                    Guardar
+                </button>
+            </Authorized>
+        </AuthorizeView>
     }
     else
     {
-        <button class="font-bold text-white bg-yellow-600
-                       hover:bg-yellow-700 rounded-xl p-3
-                       transition-colors shadow-sm"
-                @onclick="CambiarModoEdicion">
-            Editar
-        </button>
+        <AuthorizeView Roles="Admin">
+            <Authorized>
+                <button class="font-bold text-white bg-yellow-600
+                            hover:bg-yellow-700 rounded-xl p-3
+                            transition-colors shadow-sm"
+                        @onclick="CambiarModoEdicion">
+                    Editar
+                </button>
+            </Authorized>
+        </AuthorizeView>
     }
-    <button class="font-bold text-white rounded-xl p-3
-                    shadow-sm transition-colors"
-                    style="background-color: #972511;"
-                @onclick="EliminarProducto">
-            Eliminar
-        </button>
-
+    <AuthorizeView Roles="Admin">
+        <Authorized>
+            <button class="font-bold text-white rounded-xl p-3
+                            shadow-sm transition-colors"
+                            style="background-color: #972511;"
+                        @onclick="EliminarProducto">
+                    Eliminar
+            </button>
+        </Authorized>
+        <NotAuthorized>No tienes permiso por gil</NotAuthorized>
+    </AuthorizeView>
 </div>
 
 @code {
