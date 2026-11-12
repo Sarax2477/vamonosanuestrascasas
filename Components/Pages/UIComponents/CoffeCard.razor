@@ -1,4 +1,9 @@
+@using sharpness_sharp.Components.Pages.UIComponents
+@using sharpness_sharp.Data
 @using sharpness_sharp.Data.Models
+@using System.Security.Claims
+@inject AuthenticationStateProvider _auth 
+@inject ApplicationAuthDbContext _dbService
 
 <div class="flex flex-col justify-center gap-4
             border border-gray-200 rounded-2xl
@@ -93,6 +98,17 @@
         </Authorized>
         <NotAuthorized>No tienes permiso por gil</NotAuthorized>
     </AuthorizeView>
+    <AuthorizeView Roles="Cliente">
+        <Authorized>
+            <div class="font-bold text-white rounded-xl p-3
+                            shadow-sm transition-colors"
+                            style="background-color: #116d97;">
+                <input type="number" placeholder="cantidad" 
+                @onclick="RegistrarCompra" @bind="cantidadCafes"/>
+                <button  class="ui-btn bg-green-600">Comprar</button>
+            </div>
+        </Authorized>
+    </AuthorizeView>
 </div>
 
 @code {
@@ -105,7 +121,7 @@
     [Parameter] public decimal PrecioCafe { get; set; }
     [Parameter] public EventCallback<Cafe> EnviarNotificacionActualizacion { get; set; }
     [Parameter] public EventCallback<int> EnviarNotificacionEliminar { get; set; }
-
+    private int cantidadCafes;
     private void CambiarModoEdicion()
     {
         ModoEdicion = !ModoEdicion;
@@ -125,7 +141,15 @@
     }
     private Task EliminarProducto()
     {
-       EnviarNotificacionEliminar.InvokeAsync(Id);
+        EnviarNotificacionEliminar.InvokeAsync(Id);
         return Task.CompletedTask;
+    }
+    private async Task RegistrarCompra()
+    {
+        var user = (await _auth.GetAuthenticationStateAsync()).User;
+ 
+        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+        _dbService.Ventas.Add(new Ventas(userId, Id, cantidadCafes, (double)PrecioCafe*cantidadCafes, DateTime.Now));
+        _dbService.SaveChanges();
     }
 }
